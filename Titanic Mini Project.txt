@@ -1,0 +1,57 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# Sample dataset of Titanic passengers
+data = {
+    'Name': [
+        'John Doe', 'Jane Smith', 'Jim Brown', 'Lucy Green', 'Robert White',
+        'Emily Davis', 'Michael Black', 'Sarah Wilson', 'Chris Johnson', 'Anna Lee',
+        'David Miller', 'Laura Hall', 'James Taylor', 'Lisa Clark', 'Tom Anderson'
+    ],
+    'Age': [22, 38, 26, 35, 54, 28, 40, 18, 45, 32, 29, 45, 60, 22, 36],
+    'Gender': ['male', 'female', 'male', 'female', 'male', 'female', 'male', 'female', 'male', 'female',
+               'male', 'female', 'male', 'female', 'male', 'female'],
+    'Class': ['1st', '1st', '2nd', '2nd', '3rd', '3rd', '1st', '1st', '2nd', '2nd', 
+              '3rd', '3rd', '1st', '1st', '2nd', '2nd'],
+    'Fare': [100, 80, 30, 20, 10, 15, 120, 95, 60, 55, 
+             40, 30, 110, 85, 65, 45],
+    'Survived': [1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 
+                 0, 0, 1, 1, 0, 0]  # 1 = survived, 0 = did not survive
+}
+
+# Creating a DataFrame
+titanic_df = pd.DataFrame(data)
+
+# Encode categorical variables
+label_encoder = LabelEncoder()
+titanic_df['Gender'] = label_encoder.fit_transform(titanic_df['Gender'])  # Male: 1, Female: 0
+titanic_df['Class'] = label_encoder.fit_transform(titanic_df['Class'])  # Classes: 1st: 0, 2nd: 1, 3rd: 2
+
+# Features and target variable
+X = titanic_df[['Age', 'Gender', 'Class', 'Fare']]
+y = titanic_df['Survived']
+
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Create and train the Random Forest model
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+
+# Make predictions
+y_pred = model.predict(X_test)
+
+# Calculate accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print(f'Accuracy: {accuracy:.2f}')
+
+# Classification report
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+
+# Confusion matrix
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
